@@ -1,11 +1,8 @@
 const Sequelize = require('sequelize')
-const path = require('path')
 
-const databasePath = path.join(__dirname, 'database.db')
-
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: databasePath
+const sequelize = new Sequelize('academia', 'root', 'Sqlcom100%', {
+  host: 'localhost',
+  dialect: 'mysql',
 })
 
 module.exports = {
