@@ -4,6 +4,7 @@ const port = 5349
 const admin = require('./routes/admin')
 const user = require('./routes/user')
 const cors = require("cors")
+let qrword = { word: '', date: null }
 
 
 
@@ -16,6 +17,27 @@ app.use(express.json())
 app.use('/admin', admin)
 app.use('/user', user)
 
+app.post('/save/a/word/and/date/for/qrcode', (req, res) => {
+
+  try {
+    const { word, date } = req.body
+    qrword = { word, date }
+    console.log('chegei', qrword)
+
+    res.status(200).json({ message: 'Word and date saved successfully' })
+  } catch (error) {
+    res.status(400).json({ message: 'Error saving word and date' })
+  }
+})
+
+app.get('/check/word', (req, res) => {
+  try {
+     console.log("A palavra é: ",qrword.word)
+      res.status(200).json(qrword.word)
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting word' })
+  }
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
