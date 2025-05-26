@@ -22,5 +22,5 @@ const Lemma = db.sequelize.define('lemmas', {
 })
 
 
-//Lemma.sync({alter:true})
+//Lemma.sync({force:true})
 module.exports = Lemma

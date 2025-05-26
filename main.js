@@ -22,8 +22,6 @@ app.post('/save/a/word/and/date/for/qrcode', (req, res) => {
   try {
     const { word, date } = req.body
     qrword = { word, date }
-    console.log('chegei', qrword)
-
     res.status(200).json({ message: 'Word and date saved successfully' })
   } catch (error) {
     res.status(400).json({ message: 'Error saving word and date' })
@@ -32,8 +30,7 @@ app.post('/save/a/word/and/date/for/qrcode', (req, res) => {
 
 app.get('/check/word', (req, res) => {
   try {
-     console.log("A palavra é: ",qrword.word)
-      res.status(200).json(qrword.word)
+    res.status(200).json(qrword.word)
   } catch (error) {
     res.status(500).json({ message: 'Error getting word' })
   }
