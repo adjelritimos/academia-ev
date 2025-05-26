@@ -1,10 +1,6 @@
-require('dotenv').config() // Carrega as variáveis do .env
+require('dotenv/config')
 const  Sequelize = require('sequelize')
 
-// Verifica se a variável de ambiente existe
-if (!process.env.DB_URL) {
-  throw new Error('Variável de ambiente DB_URL não está definida')
-}
 
 const sequelize = new Sequelize(process.env.DB_URL, {
   dialect: 'postgres',
