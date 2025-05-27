@@ -38,5 +38,5 @@ app.get('/check/word', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT ${port}`)
+  console.log(`Server is running on PORT ${PORT}`)
 })
