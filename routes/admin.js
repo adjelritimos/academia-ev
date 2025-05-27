@@ -17,9 +17,6 @@ routes.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Garantir que a pasta uploads exista
 const uploadDir = path.join(__dirname, 'uploads')
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir)
-}
 
 // Configuração do Multer
 const storage = multer.diskStorage({
