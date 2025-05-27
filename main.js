@@ -1,7 +1,7 @@
 require('dotenv/config')
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 5349
+const PORT = 5349
 const admin = require('./routes/admin')
 const user = require('./routes/user')
 const cors = require("cors")
@@ -37,6 +37,6 @@ app.get('/check/word', (req, res) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`Server is running on PORT ${port}`)
 })
