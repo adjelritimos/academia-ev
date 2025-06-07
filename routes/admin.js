@@ -63,10 +63,10 @@ routes.put('/edit/a/module/:moduleId', async (req, res) => {
 
         const { name } = req.body
 
-        const [edited_module] = await Module.update({ username }, { where: { id: req.params.moduleId } })
+        const [edited_module] = await Module.update({ name }, { where: { id: req.params.moduleId } })
 
         if (edited_module)
-            res.status(200).json({ success: 'new module created' })
+            res.status(200).json({ success: 'module edited' })
         else
             res.status(400).json({ error: 'Algo correu mal' })
     } catch (err) {

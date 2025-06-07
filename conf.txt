@@ -1,0 +1,5 @@
+ DB_NAME = neondb
+ DB_HOST = ep-lively-shape-a9f1mnbw-pooler.gwc.azure.neon.tech
+ DB_USER = neondb_owner
+ DB_PASSWORD = npg_pRqXIx24HAKG
+ DB_PORT = 3306
