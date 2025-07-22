@@ -1,19 +1,18 @@
 const express = require('express')
 const app = express()
 const PORT = 5349
+const guest = require('./routes/guest')
 const admin = require('./routes/admin')
 const user = require('./routes/user')
 const cors = require("cors")
 let qrword = { word: '', date: null }
 
-
-
 // Middlewares
 app.use(cors())
 app.use(express.json())
 
-
 // Rotas
+app.use('/guest', guest)
 app.use('/admin', admin)
 app.use('/user', user)
 

@@ -1,6 +1,5 @@
 const express = require('express')
 const routes = express.Router()
-const { Op, where, Model } = require('sequelize')
 const Module = require('../models/modules')
 const Lesson = require('../models/lessons')
 const Lemma = require('../models/lemmas')
@@ -655,6 +654,7 @@ routes.put('/edit/a/question/:questionId', async (req, res) => {
 })
 
 routes.delete('/delete/a/question/:questionId', async (req, res) => {
+
     try {
 
         const delete_question = await Question.destroy({ where: { id: req.params.questionId } })
@@ -669,6 +669,8 @@ routes.delete('/delete/a/question/:questionId', async (req, res) => {
         console.error(err)
         res.status(500).json({ message: "Erro ao atualizar nome" })
     }
+
+
 })
 
 module.exports = routes

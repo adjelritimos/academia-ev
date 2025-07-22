@@ -1,18 +1,15 @@
 const express = require('express')
 const routes = express.Router()
-const { Op, where, Model } = require('sequelize')
 const Module = require('../models/modules')
 const Lesson = require('../models/lessons')
 const Lemma = require('../models/lemmas')
 const Command = require('../models/commands')
-const multer = require('multer')
-const path = require('path')
-const fs = require('fs')
 const Question = require('../models/questions')
 const Answer = require('../models/answers')
 
 
 routes.get('/get/all/data/to/sync', async (req, res) => {
+
     try {
 
         const modules = await Module.findAll()
@@ -32,8 +29,11 @@ routes.get('/get/all/data/to/sync', async (req, res) => {
         res.status(200).json(data)
 
     } catch (error) {
+
         console.log(error)
+
         res.status(500).json({ message: error.message })
+        
     }
 })
 
