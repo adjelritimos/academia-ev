@@ -1,4 +1,5 @@
 const express = require('express')
+const Email = require('./../emails/senderMail')
 const routes = express.Router()
 const Module = require('../models/modules')
 const Lesson = require('../models/lessons')
@@ -9,6 +10,9 @@ const path = require('path')
 const fs = require('fs')
 const Question = require('../models/questions')
 const Answer = require('../models/answers')
+const Classe = require('../models/classes')
+const User = require('../models/User')
+const generateUserName = require('../functions/generateUserName')
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads')
 
@@ -30,6 +34,119 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage })
+
+//--------------------- USERS --------------------------
+routes.post('/registe/a/user', async (req, res) => {
+
+    try {
+
+        const { name, password, school,  contact,  brithDate,  isBatizado,  batData, isAtive, email } = req.body
+
+        const username = await generateUserName(name)
+
+        const salt = bcrypt.genSaltSync(10)
+
+        const passwordHash = bcrypt.hashSync(password, salt)
+
+        const user = await User.create({ name, username, password: passwordHash, school,  contact,  brithDate,  isBatizado,  batData, isAtive })
+
+        if (user) {
+
+            Email.enviarEmail({ email, name, username })
+
+            res.status(200).json(user)
+
+        } else {
+
+            res.status(400).json({ message: "Erro ao criar usuário" })
+
+        }
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(400).json({ message: "Erro ao registrar", error: error.message })
+    }
+})
+
+// LISTAR TODOS
+routes.get('/get/all/users', async (req, res) => {
+
+    try {
+
+        const users = await User.findAll()
+
+        res.status(200).json(users)
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(400).json({ message: "Erro ao listar usuários", error: error.message })
+
+    }
+})
+
+// EDITAR
+routes.put('/edit/a/users/:id', async (req, res) => {
+
+    try {
+
+        const { id } = req.params
+
+        const { name, school, contact, brithDate, isBatizado, batData, churchName, guardianName, isAtive } = req.body
+
+        const user = await User.findByPk(id)
+
+        if (!user) return res.status(404).json({ message: "Usuário não encontrado" })
+
+        user.name = name || user.name
+        user.school = school || user.school
+        user.contact = contact || user.contact
+        user.brithDate = brithDate || user.brithDate
+        user.isBatizado = isBatizado || user.isBatizado
+        user.batData = batData || user.batData
+        user.churchName = churchName || user.churchName
+        user.guardianName = guardianName || user.guardianName
+        user.isAtive = isAtive !== undefined ? isAtive : user.isAtive
+
+        await user.save()
+
+        res.status(200).json(user)
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(400).json({ message: "Erro ao editar usuário", error: error.message })
+    }
+})
+
+// REMOVER
+routes.delete('/delete/a/users/:id', async (req, res) => {
+
+    try {
+
+        const { id } = req.params
+
+        const user = await User.findByPk(id)
+
+        if (!user) return res.status(404).json({ message: "Usuário não encontrado" })
+
+        await user.destroy()
+
+        res.status(200).json({ message: "Usuário removido com sucesso" })
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(400).json({ message: "Erro ao remover usuário", error: error.message })
+    }
+})
+
+
+//-------------------- module ---------------------------------------
 
 routes.get('/get/all/modules', async (req, res) => {
     try {
@@ -89,6 +206,77 @@ routes.delete('/delete/a/module/:moduleId', async (req, res) => {
         res.status(500).json({ message: "Erro ao atualizar nome" })
     }
 })
+
+//-------------------------------- Classes ----------------------------------
+
+// GET all classes
+routes.get('/get/all/classes', async (req, res) => {
+    try {
+        const classes = await Classe.findAll({
+            attributes: ['id', 'title', 'tytpes', 'data'],
+        })
+
+        res.status(200).json(classes)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// POST add a class
+routes.post('/add/a/class', async (req, res) => {
+    try {
+        const { title, tytpes, data } = req.body
+
+        const newClass = await Classe.create({ title, tytpes, data })
+
+        res.status(200).json({ success: 'new class created' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// PUT edit a class
+routes.put('/edit/a/class/:classId', async (req, res) => {
+    try {
+        const { title, tytpes, data } = req.body
+
+        const [editedClass] = await Classe.update(
+            { title, tytpes, data },
+            { where: { id: req.params.classId } }
+        )
+
+        if (editedClass)
+            res.status(200).json({ success: 'class edited' })
+        else
+            res.status(400).json({ error: 'Algo correu mal' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// DELETE a class
+routes.delete('/delete/a/class/:classId', async (req, res) => {
+    try {
+        const deletedClass = await Classe.destroy({
+            where: { id: req.params.classId }
+        })
+
+        if (deletedClass) {
+            res.status(200).json({ message: "class was deleted!" })
+        } else {
+            res.status(404).json({ message: "class not found" })
+        }
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Erro ao apagar a class" })
+    }
+})
+
+
 
 //-------------------------------- LESSONS -----------------------------------
 
@@ -162,6 +350,8 @@ routes.delete('/delete/a/lesson/:lessonId', async (req, res) => {
         res.status(500).json({ message: "Erro ao atualizar nome" })
     }
 })
+
+
 
 //--------------------------------- LEMMAS ----------------------------
 routes.get('/get/all/lemmas', async (req, res) => {
@@ -270,6 +460,8 @@ routes.delete('/delete/a/lemma/:lemmaId', async (req, res) => {
         res.status(500).json({ message: "Erro ao atualizar nome" })
     }
 })
+
+
 
 //=================================== COMMANDS =================================
 routes.get('/get/all/commands', async (req, res) => {
@@ -407,6 +599,8 @@ routes.delete('/delete/a/command/:commandId', async (req, res) => {
         res.status(500).json({ message: "Erro ao excluir comando." })
     }
 })
+
+
 
 //------------------------ PERGUNTAS LEMAS, COMANDOS, CONTEÚDOS ------------------------------------
 
