@@ -21,6 +21,5 @@ const Classe = db.sequelize.define('classes', {
     }
 })
 
-
 //Classe.sync({force:true})
 module.exports = Classe
