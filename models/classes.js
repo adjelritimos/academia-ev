@@ -1,6 +1,6 @@
 const db = require('./db')
 
-const Classe = db.sequelize.define('Classes', {   
+const Classe = db.sequelize.define('classes', {   
 
     title: {
         type: db.Sequelize.STRING,
