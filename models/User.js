@@ -52,7 +52,7 @@ const User = db.sequelize.define('users', {
     batData: {
         type: db.Sequelize.DATE,
         require: true,
-        allowNull: false
+        allowNull: true
     },
 
     churchName: {

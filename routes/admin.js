@@ -11,8 +11,8 @@ const fs = require('fs')
 const Question = require('../models/questions')
 const Answer = require('../models/answers')
 const Classe = require('../models/classes')
-const User = require('../models/User')
 const generateUserName = require('../functions/generateUserName')
+const User = require('../models/user')
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads')
 
@@ -40,15 +40,15 @@ routes.post('/registe/a/user', async (req, res) => {
 
     try {
 
-        const { name, password, school,  contact,  brithDate,  isBatizado,  batData, isAtive, email } = req.body
+        const { name, school,  contact,  brithDate,  isBatizado,  batData, email } = req.body
 
         const username = await generateUserName(name)
 
         const salt = bcrypt.genSaltSync(10)
 
-        const passwordHash = bcrypt.hashSync(password, salt)
+        const passwordHash = bcrypt.hashSync('12345', salt)
 
-        const user = await User.create({ name, username, password: passwordHash, school,  contact,  brithDate,  isBatizado,  batData, isAtive })
+        const user = await User.create({ name, username, password: passwordHash, school,  contact,  brithDate,  isBatizado,  batData })
 
         if (user) {
 
