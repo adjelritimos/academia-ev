@@ -1,4 +1,4 @@
-const User = require("../models/User")
+const User = require("../models/user")
 
 const generateUserName = async (name) => {
     let username = name.toLowerCase().replace(/\s+/g, '')

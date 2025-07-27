@@ -1,6 +1,6 @@
 const db = require('./db')
 
-const User = db.sequelize.define('users', {
+const User = db.sequelize.define('members', {
 
     username: {
         type: db.Sequelize.STRING,
@@ -16,6 +16,13 @@ const User = db.sequelize.define('users', {
         type: db.Sequelize.STRING,
         require: true,
         allowNull: false
+    },
+
+    nbi: {
+        type: db.Sequelize.STRING,
+        require: true,
+        allowNull: false,
+        defaultValue: '0000000000'
     },
 
     guardianName: {
@@ -51,8 +58,8 @@ const User = db.sequelize.define('users', {
 
     batData: {
         type: db.Sequelize.DATE,
-        require: true,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
 
     churchName: {

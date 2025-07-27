@@ -1,4 +1,5 @@
 const express = require('express')
+const bcrypt = require('bcryptjs')
 const Email = require('./../emails/senderMail')
 const routes = express.Router()
 const Module = require('../models/modules')
@@ -13,6 +14,7 @@ const Answer = require('../models/answers')
 const Classe = require('../models/classes')
 const generateUserName = require('../functions/generateUserName')
 const User = require('../models/user')
+const gerarPassword = require('../functions/gerarPasswords')
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads')
 
@@ -40,19 +42,21 @@ routes.post('/registe/a/user', async (req, res) => {
 
     try {
 
-        const { name, school,  contact,  brithDate,  isBatizado,  batData, email } = req.body
+        const { nbi, name, school, contact, brithDate, isBatizado, batData, email, churchName, guardianName } = req.body
 
         const username = await generateUserName(name)
 
         const salt = bcrypt.genSaltSync(10)
 
-        const passwordHash = bcrypt.hashSync('12345', salt)
+        const password = gerarPassword(8)
 
-        const user = await User.create({ name, username, password: passwordHash, school,  contact,  brithDate,  isBatizado,  batData })
+        const passwordHash = bcrypt.hashSync(password, salt)
+
+        const user = await User.create({ nbi, name, username, password: passwordHash, school, churchName, guardianName, contact, brithDate, isBatizado, batData })
 
         if (user) {
 
-            Email.enviarEmail({ email, name, username })
+            Email.enviarEmail({ email, name, username, password })
 
             res.status(200).json(user)
 
@@ -94,12 +98,13 @@ routes.put('/edit/a/users/:id', async (req, res) => {
 
         const { id } = req.params
 
-        const { name, school, contact, brithDate, isBatizado, batData, churchName, guardianName, isAtive } = req.body
+        const { nbi, name, school, contact, brithDate, isBatizado, batData, churchName, guardianName, isAtive } = req.body
 
         const user = await User.findByPk(id)
 
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" })
 
+        user.nbi = nbi || user.nbi
         user.name = name || user.name
         user.school = school || user.school
         user.contact = contact || user.contact
