@@ -13,7 +13,7 @@ const Question = require('../models/questions')
 const Answer = require('../models/answers')
 const Classe = require('../models/classes')
 const generateUserName = require('../functions/generateUserName')
-const User = require('../models/user')
+const User = require('../models/User')
 const gerarPassword = require('../functions/gerarPasswords')
 const Ativity = require('../models/ativities')
 
