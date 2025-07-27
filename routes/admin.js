@@ -15,6 +15,7 @@ const Classe = require('../models/classes')
 const generateUserName = require('../functions/generateUserName')
 const User = require('../models/user')
 const gerarPassword = require('../functions/gerarPasswords')
+const Ativity = require('../models/ativities')
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads')
 
@@ -36,6 +37,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage })
+
 
 //--------------------- USERS --------------------------
 routes.post('/registe/a/user', async (req, res) => {
@@ -281,26 +283,88 @@ routes.delete('/delete/a/class/:classId', async (req, res) => {
     }
 })
 
+// GET all activities
+routes.get('/get/all/activities', async (req, res) => {
+    try {
+        const activities = await Ativity.findAll({
+            attributes: ['id', 'title', 'descricao', 'data'],
+        })
+
+        res.status(200).json(activities)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// POST add an activity
+routes.post('/add/an/activity', async (req, res) => {
+    try {
+        const { title, descricao, data } = req.body
+
+        const newActivity = await Ativity.create({ title, descricao, data })
+
+        res.status(200).json({ success: 'New activity created successfully!' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// PUT edit an activity
+routes.put('/edit/an/activity/:activityId', async (req, res) => {
+    
+    try {
+        const { title, descricao, data } = req.body
+
+        const [editedActivity] = await Ativity.update(
+            { title, descricao, data },
+            { where: { id: req.params.activityId } }
+        )
+
+        if (editedActivity)
+            res.status(200).json({ success: 'Activity updated successfully' })
+        else
+            res.status(400).json({ error: 'Something went wrong' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
+    }
+})
+
+// DELETE an activity
+routes.delete('/delete/an/activity/:activityId', async (req, res) => {
+    try {
+        const deleted = await Ativity.destroy({
+            where: { id: req.params.activityId }
+        })
+
+        if (deleted) {
+            res.status(200).json({ message: "Activity was deleted!" })
+        } else {
+            res.status(404).json({ message: "Activity not found" })
+        }
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Error deleting the activity" })
+    }
+})
 
 
 //-------------------------------- LESSONS -----------------------------------
 
-routes.get('/get/all/lessons/of/module/:moduleId', async (req, res) => {
-    const { moduleId } = req.params
+routes.get('/get/all/lessons', async (req, res) => {
 
     try {
-        const module = await Module.findByPk(moduleId, {
-            include: {
-                model: Lesson,
-                as: 'lessons'
-            }
-        })
+        const lessons = await Lesson.findAll()
 
-        if (!module) {
-            res.status(404).json({ message: "Módulo não encontrado." })
+        if (!lessons) {
+            res.status(404).json({ message: "Li não encontrado." })
         }
 
-        res.status(200).json(module.lessons)
+        res.status(200).json(lessons)
+
     } catch (err) {
         console.error(err)
         res.status(500).json({ message: "Erro interno no servidor." })
