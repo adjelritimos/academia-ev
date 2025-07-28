@@ -7,7 +7,7 @@ const Attendance = db.sequelize.define('attendances', {
         type: db.Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'Classes', // nome da tabela
+            model: Classe, // nome da tabela
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -16,7 +16,7 @@ const Attendance = db.sequelize.define('attendances', {
         type: db.Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'users',
+            model: User,
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -33,5 +33,7 @@ Attendance.belongsTo(Classe, { foreignKey: 'classId', as: 'classe' })
 
 User.hasMany(Attendance, { foreignKey: 'userId', as: 'attendances', onDelete: 'CASCADE' })
 Attendance.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+
+//Attendance.sync({force:true})
 
 module.exports = Attendance
