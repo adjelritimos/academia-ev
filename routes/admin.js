@@ -16,6 +16,7 @@ const generateUserName = require('../functions/generateUserName')
 const User = require('../models/User')
 const gerarPassword = require('../functions/gerarPasswords')
 const Ativity = require('../models/ativities')
+const Attendance = require('../models/presencas')
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads')
 
@@ -935,5 +936,31 @@ routes.delete('/delete/a/question/:questionId', async (req, res) => {
 
 
 })
+
+routes.get('/get/all/attendances', async (req, res) => {
+    try {
+        const attendances = await Attendance.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'user', // alias definido em belongsTo
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: Classe,
+                    as: 'classe', // alias definido em belongsTo
+                    attributes: ['id', 'title', 'data']
+                }
+            ],
+            order: [['datahora', 'DESC']]
+        })
+
+        res.status(200).json(attendances)
+    } catch (error) {
+        console.error('Erro ao buscar presenças:', error)
+        res.status(500).json({ error: 'Erro interno do servidor' })
+    }
+})
+
 
 module.exports = routes
